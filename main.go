@@ -1,15 +1,15 @@
 package main
 
-import(
+import (
 	"crypto/sha256"
 	"encoding/hex"
-	"time"
+	"fmt"
 	"strings"
-	"net"
-	"github.com/tyler-smith/go-bip39"
- 	"github.com/tyler-smith/go-bip32"
-)
+	"time"
 
+	"github.com/tyler-smith/go-bip32"
+	"github.com/tyler-smith/go-bip39"
+)
 
 type Data struct {
 	Message string
@@ -18,10 +18,10 @@ type Data struct {
 type Block struct {
 	Index     int
 	Timestamp time.Time
-	Data 	  Data
+	Data      Data
 	Hash      string
 	PrevHash  string
-	Nonce 	  string
+	Nonce     string
 }
 
 type Node struct {
@@ -31,7 +31,8 @@ type Node struct {
 var Blockchain []Block
 var TRANSACTION_PER_BLOCK = 20
 var nodes []Node
-var connections []*Connection
+
+//var connections []*Connection
 
 func main() {
 	otherNode := Node{}
@@ -39,17 +40,19 @@ func main() {
 
 	nodes = append(nodes, otherNode)
 
+	createMnemonic()
+
 	data := Data{Message: "salut"}
 
-	myBlock := Block {
-		Index: 0,
+	myBlock := Block{
+		Index:     0,
 		Timestamp: time.Now(),
-		Data: data,
-		Hash: "123123123",
-		PrevHash: "02392392",
+		Data:      data,
+		Hash:      "123123123",
+		PrevHash:  "02392392",
 	}
 
-	proofOfWork(myBlock)
+	//proofOfWork(myBlock)
 
 	println(myBlock.Nonce)
 
@@ -57,10 +60,10 @@ func main() {
 }
 
 func connectToNodes() {
-	conn, err := net.Dial("tcp", "golang.org:80")
+	/*conn, err := net.Dial("tcp", "golang.org:80")
 	if err != nil {
 		// handle error
-	}
+	}*/
 }
 
 func calculateHash(block Block) string {
@@ -82,7 +85,7 @@ func generateBlock(oldBlock Block, data Data) (Block, error) {
 	t := time.Now()
 
 	newBlock.Index = oldBlock.Index + 1
-	newBlock.Timestamp = t.String()
+	newBlock.Timestamp = t
 	newBlock.Data = data
 	newBlock.PrevHash = oldBlock.Hash
 	newBlock.Hash = calculateHash(newBlock)
@@ -117,7 +120,6 @@ func proofOfWork(newBlock Block) Block {
 		}
 
 		n += 1
-		//println(n)
 	}
 
 	return newBlock
@@ -150,22 +152,26 @@ func replaceChain(newBlocks []Block) {
 }
 
 func createMnemonic() {
-	  // Generate a mnemonic for memorization or user-friendly seeds
-	  entropy, _ := bip39.NewEntropy(256)
-	  mnemonic, _ := bip39.NewMnemonic(entropy)
-	
-	  // Generate a Bip32 HD wallet for the mnemonic and a user supplied password
-	  seed := bip39.NewSeed(mnemonic, "Secret Passphrase")
-	
-	  masterKey, _ := bip32.NewMasterKey(seed)
-	  publicKey := masterKey.PublicKey()
-	
-	  // Display mnemonic and keys
-	  fmt.Println("Mnemonic: ", mnemonic)
-	  fmt.Println("Master private key: ", masterKey)
-	  fmt.Println("Master public key: ", publicKey)
+	// Generate a mnemonic for memorization or user-friendly seeds
+	entropy, _ := bip39.NewEntropy(256)
+	mnemonic, _ := bip39.NewMnemonic(entropy)
+
+	// Generate a Bip32 HD wallet for the mnemonic and a user supplied password
+	seed := bip39.NewSeed(mnemonic, "Secret Passphrase")
+
+	masterKey, _ := bip32.NewMasterKey(seed)
+
+	publicKey := masterKey.PublicKey()
+
+	ecdsa.
+
+		// Display mnemonic and keys
+		fmt.Println("Mnemonic: ", mnemonic)
+	fmt.Println("Master private key: ", masterKey)
+	fmt.Println("Master public key: ", publicKey)
 }
 
 func validateTransaction() {
 	// Check key from sender
+
 }
