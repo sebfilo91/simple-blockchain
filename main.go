@@ -9,6 +9,9 @@ import (
 
 	"github.com/tyler-smith/go-bip32"
 	"github.com/tyler-smith/go-bip39"
+	"crypto/ecdsa"
+	"crypto/elliptic"
+	"crypto/rand"
 )
 
 type Data struct {
@@ -92,7 +95,6 @@ func generateBlock(oldBlock Block, data Data) (Block, error) {
 
 	return newBlock, nil
 }
-
 func proofOfWork(newBlock Block) Block {
 	complete := false
 	var n uint64
@@ -151,6 +153,11 @@ func replaceChain(newBlocks []Block) {
 	}
 }
 
+
+func sign() {
+
+}
+
 func createMnemonic() {
 	// Generate a mnemonic for memorization or user-friendly seeds
 	entropy, _ := bip39.NewEntropy(256)
@@ -163,12 +170,20 @@ func createMnemonic() {
 
 	publicKey := masterKey.PublicKey()
 
-	ecdsa.
+	privKeyEcdsa, _ := ecdsa.GenerateKey(elliptic.P521(), rand.Reader)
 
+	msg := []byte("bonjour")
+
+	r, s, _ := ecdsa.Sign(rand.Reader, privKeyEcdsa, msg)
+
+	verify := ecdsa.Verify(&privKeyEcdsa.PublicKey, msg, r, s)
+
+	fmt.Println("verify : " ,verify)
 		// Display mnemonic and keys
-		fmt.Println("Mnemonic: ", mnemonic)
+	fmt.Println("Mnemonic: ", mnemonic)
 	fmt.Println("Master private key: ", masterKey)
 	fmt.Println("Master public key: ", publicKey)
+
 }
 
 func validateTransaction() {
